@@ -35,28 +35,32 @@ public class SimpleWebContainer {
             // Start a server using TCP protocol
             ServerSocket serverSocket = new ServerSocket(port);
 
-            // Accept the socket from the client
-            Socket socket = serverSocket.accept();
+            while (!serverSocket.isClosed()) {
+                // Accept the socket from the client
+                // And close preventing the open socket loading by using try-with-resource
 
-            // Reading msg from the input stream
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            String line = in.readLine();
+                try (Socket socket = serverSocket.accept()) {
+                    // Reading msg from the input stream
+                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    String line = in.readLine();
 
-            while (!line.isBlank()) {
-                System.out.println(line);
-                line = in.readLine();
+                    while (!line.isBlank()) {
+                        System.out.println(line);
+                        line = in.readLine();
+                    }
+
+                    // Sending to the client
+                    PrintWriter out = new PrintWriter(socket.getOutputStream());
+                    out.println("HTTP/1.1 200 OK");
+                    out.println("Content-Type: text/html");
+                    out.println();
+                    out.println("<html><body>");
+                    out.println("Current time: " + LocalDateTime.now());
+                    out.println("</body></html>");
+
+                    out.flush();
+                }
             }
-
-            // Sending to the client
-            PrintWriter out = new PrintWriter(socket.getOutputStream());
-            out.println("HTTP/1.1 200 OK");
-            out.println("Content-Type: text/html");
-            out.println();
-            out.println("<html><body>");
-            out.println("Current time: " + LocalDateTime.now());
-            out.println("</html></body>");
-
-            out.flush();
 
         } catch (IOException ex) {
             Logger.getLogger(SimpleWebContainer.class.getName()).log(Level.SEVERE, null, ex);
