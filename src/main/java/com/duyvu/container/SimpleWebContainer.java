@@ -37,36 +37,16 @@ public class SimpleWebContainer {
 
             while (!serverSocket.isClosed()) {
                 // Accept the socket from the client
-                // And close preventing the open socket loading by using try-with-resource
-
-                try (Socket socket = serverSocket.accept()) {
-                    // Reading msg from the input stream
-                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    String line = in.readLine();
-
-                    while (!line.isBlank()) {
-                        System.out.println(line);
-                        line = in.readLine();
-                    }
-
-                    // Sending to the client
-                    PrintWriter out = new PrintWriter(socket.getOutputStream());
-                    out.println("HTTP/1.1 200 OK");
-                    out.println("Content-Type: text/html");
-                    out.println();
-                    out.println("<html><body>");
-                    out.println("Current time: " + LocalDateTime.now());
-                    out.println("</body></html>");
-
-                    out.flush();
-                }
+                Socket socket = serverSocket.accept();
+                Thread socketThreadHanlder = new SocketHandler(socket);
+                socketThreadHanlder.start();
             }
-
         } catch (IOException ex) {
-            Logger.getLogger(SimpleWebContainer.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 
+    // Entry point to start a web container
     public static void main(String[] args) {
         SimpleWebContainer container = new SimpleWebContainer(8080);
         container.start();
