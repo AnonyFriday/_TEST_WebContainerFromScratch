@@ -26,6 +26,9 @@ public class HttpServlet {
 
     }
 
+    // =================================
+    // == HttpServlet Lifecycle
+    // =================================
     public void doGet() {
 
     }
