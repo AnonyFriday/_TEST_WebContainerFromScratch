@@ -21,7 +21,7 @@ public class SignupServlet extends HttpServlet {
 
     @Override
     public void doGet() {
-        System.out.println("From Signup doGet");
+        System.out.println("doGet() from doGet");
     }
 
     @Override

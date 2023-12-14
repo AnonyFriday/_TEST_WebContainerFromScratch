@@ -17,12 +17,12 @@ public class HelloWorldServlet extends HttpServlet {
 
     @Override
     public void init() {
-        System.out.println("init() called from Hello World");
+        System.out.println("init() from Hello World");
     }
 
     @Override
     public void doGet() {
-        System.out.println("from HelloWorld doGet");
+        System.out.println("doGet() from HelloWorld");
     }
 
     @Override
