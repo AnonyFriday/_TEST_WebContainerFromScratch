@@ -125,8 +125,7 @@ public class SimpleWebContainer {
         container.urlMapping.forEach((url, servletInstance) -> {
             System.out.println("URL: " + url);
             System.out.println("Servlet: " + servletInstance.getClass());
-
-            servlet.doGet();
+            servletInstance.doGet();
         });
 
 
