@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A mimic version of HttpRequest capturing the request details sent from clients
@@ -25,12 +27,12 @@ public class HttpRequest {
     private HttpMethod method = null;      // A HTTP protocol method
     private final BufferedReader in;             // InputStream buffer from client
     private String path = null;            // e.g. /hello?user=123
-    private final Map<String, String> headers;   // header's content, split by :
+    private final Map<String, String> requestHeaders;   // header's content, split by :
     private final Map<String, String> requestParameters; // e.g. user=123, pass=123
 
     public HttpRequest(BufferedReader in) {
         this.in = in;
-        headers = new HashMap<>();
+        requestHeaders = new HashMap<>();
         requestParameters = new HashMap<>();
     }
 
@@ -47,6 +49,17 @@ public class HttpRequest {
             String[] paramArr = param.split("=");
             requestParameters.put(paramArr[0], paramArr[1]);
         });
+    }
+
+    /**
+     * Parse each pair of header into the header map
+     *
+     * @param headerLine: A pair of header
+     */
+    private void parseRequestHeaderLine(String headerLine) {
+        // e.g. Host: localhost:8080
+        String[] pairArr = headerLine.split(": ");
+        requestHeaders.put(pairArr[0], pairArr[1]);
     }
 
 
@@ -69,7 +82,7 @@ public class HttpRequest {
             // GET, POST
             method = HttpMethod.valueOf(firstLineArray[0]);
 
-            // /hello?user=123 => if having ? or not
+            // Read query string, path
             String url = firstLineArray[1];
             if (!url.isBlank()) {
 
@@ -87,18 +100,19 @@ public class HttpRequest {
                 }
             }
 
+            // Read header lines
+            while (!line.isBlank()) {
+                line = in.readLine();
+                if (!"".equals(line)) {
+                    parseRequestHeaderLine(line);
+                }
+            }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-
-        // If nothing gone well, then return false
-        return false;
+        // If nothing wrong, return true;
+        return true;
     }
-
-
-    public static void main(String[] args) {
-
-    }
-
 }

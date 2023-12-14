@@ -23,7 +23,7 @@ public class SimpleWebContainer {
     // =================================
     private final int port;
     private final String configFileName;
-    private final Map<String, HttpServlet> urlMapping = new HashMap<>();
+    private final Map<String, HttpServlet> urlMapping;
 
     // =================================
     // == Constructors
@@ -31,6 +31,7 @@ public class SimpleWebContainer {
     public SimpleWebContainer(int port, String configFileName) {
         this.port = port;
         this.configFileName = configFileName;
+        this.urlMapping = new HashMap<>();
     }
 
     // =================================
@@ -49,7 +50,7 @@ public class SimpleWebContainer {
             while (!serverSocket.isClosed()) {
                 // Accept the socket from the client
                 Socket socket = serverSocket.accept();
-                new SocketHandler(socket).start();
+                new SocketHandler(socket, urlMapping).start();
             }
         } catch (IOException ex) {
             ex.printStackTrace();
