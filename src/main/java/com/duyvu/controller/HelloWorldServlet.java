@@ -16,6 +16,11 @@ import com.duyvu.container.HttpServlet;
 public class HelloWorldServlet extends HttpServlet {
 
     @Override
+    public void init() {
+        System.out.println("init() called from Hello World");
+    }
+
+    @Override
     public void doGet() {
         System.out.println("from HelloWorld doGet");
     }

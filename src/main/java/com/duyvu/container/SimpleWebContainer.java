@@ -59,6 +59,7 @@ public class SimpleWebContainer {
 
     /**
      * Load the config.propeties file as the url mapping to the servlet
+     * In the Web Dynamic, it equals to web.xml
      * https://viettuts.vn/vi-du-java-io/read-properties-file-trong-java
      */
     public void readPropertiesFile() {
@@ -79,6 +80,13 @@ public class SimpleWebContainer {
                 // Finding the servlet instance based on servlet's name and mapping with the endpoint
                 properties.forEach((url, servletName) -> {
                     HttpServlet servlet = getServletInstance((String) servletName);
+
+                    // If the servlet not null, then inti()
+                    if (servlet != null) {
+                        servlet.init();
+                    }
+
+                    // Attach the URL with servlet class and added to the map
                     urlMapping.put((String) url, servlet);
                 });
 
