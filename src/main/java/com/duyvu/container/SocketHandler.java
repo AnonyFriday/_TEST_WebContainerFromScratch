@@ -25,6 +25,8 @@ public class SocketHandler extends Thread {
 
     public SocketHandler(Socket socket) {
         this.socket = socket;
+
+        // TODO: Process the request
         this.urlMappings = new HashMap<>();
     }
 
@@ -39,7 +41,7 @@ public class SocketHandler extends Thread {
             String line = in.readLine();
 
             while (!line.isBlank()) {
-                System.out.println(line);
+//                System.out.println(line);
                 line = in.readLine();
             }
 

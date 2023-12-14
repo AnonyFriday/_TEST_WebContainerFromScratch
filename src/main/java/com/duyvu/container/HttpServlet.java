@@ -19,7 +19,7 @@ public class HttpServlet {
     }
 
     public void service() {
-        // TODO: Request, Response Object as Parameters
+
     }
 
     public void destroy() {

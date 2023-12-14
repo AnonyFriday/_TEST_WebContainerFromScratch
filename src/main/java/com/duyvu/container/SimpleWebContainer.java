@@ -31,7 +31,6 @@ public class SimpleWebContainer {
     public SimpleWebContainer(int port, String configFileName) {
         this.port = port;
         this.configFileName = configFileName;
-
     }
 
     // =================================
@@ -50,8 +49,8 @@ public class SimpleWebContainer {
             while (!serverSocket.isClosed()) {
                 // Accept the socket from the client
                 Socket socket = serverSocket.accept();
-                Thread socketThreadHanlder = new SocketHandler(socket);
-                socketThreadHanlder.start();
+                Thread socketThreadHandler = new SocketHandler(socket);
+                socketThreadHandler.start();
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -78,8 +77,7 @@ public class SimpleWebContainer {
                 properties.load(input);
 
                 // Finding the servlet instance based on servlet's name and mapping with the endpoint
-                properties.forEach((url, servletName) ->
-                {
+                properties.forEach((url, servletName) -> {
                     HttpServlet servlet = getServletInstance((String) servletName);
                     urlMapping.put((String) url, servlet);
                 });
@@ -90,18 +88,15 @@ public class SimpleWebContainer {
         }
     }
 
-
     /**
      * Get the servlet instance by passing a class name mapping with config url file
      *
-     * @param className
+     * @param className: a servlet name passed from the config.properties
      * @return an instance of HttpServlet
      */
     private HttpServlet getServletInstance(String className) {
 
-
         // Using the reflection api to reflect the class and get the instance of it
-
         try {
             return (HttpServlet) Class.forName(className).getDeclaredConstructor().newInstance();
         } catch (ClassNotFoundException e) {
@@ -121,16 +116,24 @@ public class SimpleWebContainer {
 
     // Entry point to start a web container
     public static void main(String[] args) {
-        SimpleWebContainer container = new SimpleWebContainer(8080, ""
-                + "config.properties");
+        SimpleWebContainer container = new SimpleWebContainer(8080, "" + "config.properties");
 
-//        // Read url mappings from properties file
-//        container.readPropertiesFile();
-//
-//        // Start the container
-//        container.start();
+        // Read url mappings from properties file
+        container.readPropertiesFile();
+
+        // Url the and the servlet instance
+        container.urlMapping.forEach((url, servletInstance) -> {
+            System.out.println("URL: " + url);
+            System.out.println("Servlet: " + servletInstance.getClass());
+
+            servlet.doGet();
+        });
+
+
+        // Start the container
+        container.start();
+
 
         container.getServletInstance("HttpServer");
-
     }
 }

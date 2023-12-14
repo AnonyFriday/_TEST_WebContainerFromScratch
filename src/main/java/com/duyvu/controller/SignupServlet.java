@@ -15,7 +15,7 @@ public class SignupServlet extends HttpServlet {
 
     @Override
     public void doGet() {
-        super.doGet(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+        System.out.println("From Signup doGet");
     }
 
     @Override
