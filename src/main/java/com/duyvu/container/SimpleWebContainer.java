@@ -4,16 +4,13 @@
  */
 package com.duyvu.container;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.time.LocalDateTime;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -26,6 +23,7 @@ public class SimpleWebContainer {
     // =================================
     private final int port;
     private final String configFileName;
+    private final Map<String, HttpServlet> urlMapping = new HashMap<>();
 
     // =================================
     // == Constructors
@@ -33,11 +31,13 @@ public class SimpleWebContainer {
     public SimpleWebContainer(int port, String configFileName) {
         this.port = port;
         this.configFileName = configFileName;
+
     }
 
     // =================================
     // == Methods
     // =================================
+
     /**
      * Starting a server
      */
@@ -64,36 +64,73 @@ public class SimpleWebContainer {
      */
     public void readPropertiesFile() {
 
-        //Get the inputstream to load the config file into the program
-        InputStream input = getClass()
-                .getClassLoader()
-                .getResourceAsStream(configFileName);
+        // Get the inputstream to load the config file into the program
+        InputStream input = getClass().getClassLoader().getResourceAsStream(configFileName);
 
         // Checking if found the config file
         if (input == null) {
-            throw new RuntimeException("Unable to find file: "
-                    + configFileName);
+            throw new RuntimeException("Unable to find file: " + configFileName);
         } else {
             // Reading a config file if reading successfully
             Properties properties = new Properties();
             try {
+                // Load config to application
                 properties.load(input);
+
+                // Finding the servlet instance based on servlet's name and mapping with the endpoint
+                properties.forEach((url, servletName) ->
+                {
+                    HttpServlet servlet = getServletInstance((String) servletName);
+                    urlMapping.put((String) url, servlet);
+                });
+
             } catch (IOException ex) {
                 ex.getStackTrace();
             }
         }
     }
 
+
+    /**
+     * Get the servlet instance by passing a class name mapping with config url file
+     *
+     * @param className
+     * @return an instance of HttpServlet
+     */
+    private HttpServlet getServletInstance(String className) {
+
+
+        // Using the reflection api to reflect the class and get the instance of it
+
+        try {
+            return (HttpServlet) Class.forName(className).getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException e) {
+            e.getStackTrace();
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+
+        return null;
+    }
+
     // Entry point to start a web container
     public static void main(String[] args) {
-        SimpleWebContainer container
-                = new SimpleWebContainer(8080, ""
-                        + "config.properties");
+        SimpleWebContainer container = new SimpleWebContainer(8080, ""
+                + "config.properties");
 
-        // Read url mappings from properties file
-        container.readPropertiesFile();
+//        // Read url mappings from properties file
+//        container.readPropertiesFile();
+//
+//        // Start the container
+//        container.start();
 
-        // Start the container
-        container.start();
+        container.getServletInstance("HttpServer");
+
     }
 }

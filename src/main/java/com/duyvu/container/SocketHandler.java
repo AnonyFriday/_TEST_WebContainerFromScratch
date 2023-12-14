@@ -10,19 +10,22 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author duyvu
  */
 public class SocketHandler extends Thread {
 
-    private Socket socket;
+    private final Socket socket;
+    private final Map<String, HttpServlet> urlMappings;
 
     public SocketHandler(Socket socket) {
         this.socket = socket;
+        this.urlMappings = new HashMap<>();
     }
 
     @Override
