@@ -40,10 +40,13 @@ public class SocketHandler extends Thread {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String line = in.readLine();
 
+            // Receive the request from client
             while (!line.isBlank()) {
-//                System.out.println(line);
+                System.out.println(line);
                 line = in.readLine();
             }
+
+            System.out.println("==========================");
 
             // Sending to the client
             out = new PrintWriter(socket.getOutputStream());
@@ -53,8 +56,8 @@ public class SocketHandler extends Thread {
             out.println("<html><body>");
             out.println("Current time: " + LocalDateTime.now());
             out.println("</body></html>");
-
             out.flush();
+
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
@@ -64,6 +67,7 @@ public class SocketHandler extends Thread {
                 in.close();
                 out.close();
                 socket.close();
+
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

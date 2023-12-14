@@ -49,8 +49,7 @@ public class SimpleWebContainer {
             while (!serverSocket.isClosed()) {
                 // Accept the socket from the client
                 Socket socket = serverSocket.accept();
-                Thread socketThreadHandler = new SocketHandler(socket);
-                socketThreadHandler.start();
+                new SocketHandler(socket).start();
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -136,10 +135,8 @@ public class SimpleWebContainer {
             servletInstance.doGet();
         });
 
-
         // Start the container
         container.start();
-
 
         container.getServletInstance("HttpServer");
     }
