@@ -27,9 +27,10 @@ public class SocketHandler extends Thread {
 
     @Override
     public void run() {
+        // Reading msg from the input stream
+        BufferedReader in = null;
         try {
-            // Reading msg from the input stream
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             HttpRequest httpRequest = new HttpRequest(in);
 
             // If cannot parse to the Http Request object, then show internal error
@@ -37,10 +38,10 @@ public class SocketHandler extends Thread {
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 out.println("HTTP/1.1 500 Internal Server Error");
                 out.println("Content-Type: text/html");
-                out.println("");
+                out.println();
                 out.println("<html><body>");
                 out.println("<h1>Cannot process your request. Please try again.</h1>");
-                out.println("</html></body>");
+                out.println("</body></html>");
             } else {
 
                 // If parsing succesfull but the servlet is not found, or dont have that url
@@ -50,15 +51,19 @@ public class SocketHandler extends Thread {
                     PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                     out.println("HTTP/1.1 404 Not Found");
                     out.println("Content-Type: text/html");
-                    out.println("");
+                    out.println();
                     out.println("<html><body>");
                     out.println("<h1>Servlet not found. Please try again</h1>");
-                    out.println("</html></body>");
+                    out.println("</body></html>");
                 } else {
-
                     // If parsing successful and the servlet supporting route is available
                     HttpResponse httpResponse = new HttpResponse(socket.getOutputStream());
+                    PrintWriter out = httpResponse.getPrintWriter();
+                    out.println("HTTP/1.1 200 OK");
+                    out.println("Content-Type: text/html");
+                    out.println();
                     servlet.service(httpRequest, httpResponse);
+                    out.flush();
                 }
             }
 
@@ -69,10 +74,7 @@ public class SocketHandler extends Thread {
         } finally {
             // Closing the socket after handling the communication succesfully
             try {
-//                in.close();
-//                out.close();
                 socket.close();
-
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
