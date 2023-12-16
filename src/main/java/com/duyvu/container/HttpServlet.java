@@ -18,8 +18,15 @@ public class HttpServlet {
         System.out.println("HttpServlet Init Default Impl...");
     }
 
-    public void service() {
+    public void service(HttpRequest request, HttpResponse response) {
 
+        HttpMethod method = request.getMethod();
+
+        if (HttpMethod.GET.equals(method)) {
+            doGet(request, response);
+        } else if (HttpMethod.POST.equals(method)) {
+            doPost(request, response);
+        }
     }
 
     public void destroy() {
@@ -29,11 +36,12 @@ public class HttpServlet {
     // =================================
     // == Http Methods
     // =================================
-    public void doGet() {
-
+    public void doGet(HttpRequest request, HttpResponse response) {
+        System.out.println("doGet() method in Default Impl ...");
     }
 
-    public void doPost() {
+    public void doPost(HttpRequest request, HttpResponse response) {
+        System.out.println("doGet() method in Default Impl ...");
 
     }
 }

@@ -65,6 +65,7 @@ public class SimpleWebContainer {
     public void readPropertiesFile() {
 
         // Get the inputstream to load the config file into the program
+        // Just like checking web.xml
         InputStream input = getClass().getClassLoader().getResourceAsStream(configFileName);
 
         // Checking if found the config file
@@ -81,7 +82,7 @@ public class SimpleWebContainer {
                 properties.forEach((url, servletName) -> {
                     HttpServlet servlet = getServletInstance((String) servletName);
 
-                    // If the servlet not null, then inti()
+                    // If the servlet not null, then init()
                     if (servlet != null) {
                         servlet.init();
                     }
@@ -124,21 +125,19 @@ public class SimpleWebContainer {
 
     // Entry point to start a web container
     public static void main(String[] args) {
-        SimpleWebContainer container = new SimpleWebContainer(8080, "" + "config.properties");
+        SimpleWebContainer container = new SimpleWebContainer(8080, "config.properties");
 
         // Read url mappings from properties file
         container.readPropertiesFile();
 
-        // Url the and the servlet instance
-        container.urlMapping.forEach((url, servletInstance) -> {
-            System.out.println("URL: " + url);
-            System.out.println("Servlet: " + servletInstance.getClass());
-            servletInstance.doGet();
-        });
+        // [Testing] Url the and the servlet instance
+//        container.urlMapping.forEach((url, servletInstance) -> {
+//            System.out.println("URL: " + url);
+//            System.out.println("Servlet: " + servletInstance.getClass());
+//            servletInstance.doGet();
+//        });
 
         // Start the container
         container.start();
-
-        container.getServletInstance("HttpServer");
     }
 }

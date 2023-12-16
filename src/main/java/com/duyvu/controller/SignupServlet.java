@@ -18,14 +18,4 @@ public class SignupServlet extends HttpServlet {
     public void init() {
         System.out.println("init() called from signup");
     }
-
-    @Override
-    public void doGet() {
-        System.out.println("doGet() from doGet");
-    }
-
-    @Override
-    public void doPost() {
-        super.doPost(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
-    }
 }

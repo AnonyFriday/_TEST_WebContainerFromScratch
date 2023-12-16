@@ -26,7 +26,7 @@ public class HttpRequest {
 
     private HttpMethod method = null;      // A HTTP protocol method
     private final BufferedReader in;             // InputStream buffer from client
-    private String path = null;            // e.g. /hello?user=123
+    private String path = null;            // e.g. /hello?user=123 -> path is /hello
     private final Map<String, String> requestHeaders;   // header's content, split by :
     private final Map<String, String> requestParameters; // e.g. user=123, pass=123
 
@@ -62,7 +62,6 @@ public class HttpRequest {
         requestHeaders.put(pairArr[0], pairArr[1]);
     }
 
-
     /**
      * A function to parse http request to the object HttpRequest
      *
@@ -83,19 +82,21 @@ public class HttpRequest {
             method = HttpMethod.valueOf(firstLineArray[0]);
 
             // Read query string, path
+            // e.g. /hello?user=123 => good
+            // e.g. /hello?user => not good
             String url = firstLineArray[1];
             if (!url.isBlank()) {
 
-                // e.g. /hello?user=123
-                int queryStringIndex = url.indexOf("?");
-
                 // Extract the path and the queryString
-                if (queryStringIndex > -1) {
+                int queryStringIndex = url.indexOf("?");
+                if (queryStringIndex > -1 && HttpMethod.GET.equals(method)) {
+
+                    // e.g. /hello?user=123, for GET method
                     String queryString = url.substring(queryStringIndex + 1);
                     parseRequestParameters(queryString);
                     path = url.substring(0, queryStringIndex);
                 } else {
-                    // e.g. /hello
+                    // e.g. /hello, for POST, GET method
                     path = url;
                 }
             }
@@ -108,11 +109,24 @@ public class HttpRequest {
                 }
             }
 
+            // If POST request, then having extra body
+
+            // POST /test HTTP/1.1
+            // Host: foo.example
+            // Content-Type: application/x-www-form-urlencoded
+            // Content-Length: 27
+            // [blank space]
+            // field1=value1&field2=value2  <= read this line
+
+            if (HttpMethod.POST.equals(method)) {
+                String queryString = in.readLine();
+                parseRequestParameters(queryString);
+            }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        // If nothing wrong, return true;
         return true;
     }
 }

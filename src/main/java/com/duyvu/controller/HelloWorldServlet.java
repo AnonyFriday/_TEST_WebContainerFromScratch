@@ -1,7 +1,11 @@
 package com.duyvu.controller;
 
 
+import com.duyvu.container.HttpRequest;
+import com.duyvu.container.HttpResponse;
 import com.duyvu.container.HttpServlet;
+
+import java.io.PrintWriter;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -21,12 +25,19 @@ public class HelloWorldServlet extends HttpServlet {
     }
 
     @Override
-    public void doGet() {
-        System.out.println("doGet() from HelloWorld");
+    public void doGet(HttpRequest request, HttpResponse response) {
+        PrintWriter out = response.getPrintWriter();
+        out.println("HTTP/1.1 200 OK");
+        out.println("Content-Type: text/html");
+        out.println();
+        out.println("<html><body>");
+        out.println("<p>doGet() in HelloServlet</p>");
+        out.println("</body></html>");
+        out.flush();
     }
 
     @Override
-    public void doPost() {
-        super.doPost(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+    public void doPost(HttpRequest request, HttpResponse response) {
+
     }
 }

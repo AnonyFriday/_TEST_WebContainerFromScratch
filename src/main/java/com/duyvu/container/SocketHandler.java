@@ -27,17 +27,14 @@ public class SocketHandler extends Thread {
 
     @Override
     public void run() {
-        PrintWriter out = null;
-        BufferedReader in = null;
-
         try {
             // Reading msg from the input stream
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             HttpRequest httpRequest = new HttpRequest(in);
 
-            // If cannot parse to the Http Request, then show internal error
+            // If cannot parse to the Http Request object, then show internal error
             if (!httpRequest.parseHttpRequest()) {
-                out = new PrintWriter(socket.getOutputStream(), true);
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 out.println("HTTP/1.1 500 Internal Server Error");
                 out.println("Content-Type: text/html");
                 out.println("");
@@ -45,10 +42,12 @@ public class SocketHandler extends Thread {
                 out.println("<h1>Cannot process your request. Please try again.</h1>");
                 out.println("</html></body>");
             } else {
-                // If parsing succesful but the servlet is not found
-                // which means the path is not found => 404
-                if (urlMapping.get(httpRequest.getPath()) == null) {
-                    out = new PrintWriter(socket.getOutputStream(), true);
+
+                // If parsing succesfull but the servlet is not found, or dont have that url
+                // path is not found => No Servlet => 404
+                HttpServlet servlet = urlMapping.get(httpRequest.getPath());
+                if (servlet == null) {
+                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                     out.println("HTTP/1.1 404 Not Found");
                     out.println("Content-Type: text/html");
                     out.println("");
@@ -56,14 +55,10 @@ public class SocketHandler extends Thread {
                     out.println("<h1>Servlet not found. Please try again</h1>");
                     out.println("</html></body>");
                 } else {
-                    // If parsing sucessful and the servlet supporting route is availabel
-                    out = new PrintWriter(socket.getOutputStream(), true);
-                    out.println("HTTP/1.1 200 OK");
-                    out.println("Content-Type: text/html");
-                    out.println();
-                    out.println("<html><body>");
-                    out.println("Current time: " + LocalDateTime.now());
-                    out.println("</body></html>");
+
+                    // If parsing successful and the servlet supporting route is available
+                    HttpResponse httpResponse = new HttpResponse(socket.getOutputStream());
+                    servlet.service(httpRequest, httpResponse);
                 }
             }
 
