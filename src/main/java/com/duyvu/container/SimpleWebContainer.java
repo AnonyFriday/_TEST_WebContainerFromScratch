@@ -131,11 +131,10 @@ public class SimpleWebContainer {
         container.readPropertiesFile();
 
         // [Testing] Url the and the servlet instance
-//        container.urlMapping.forEach((url, servletInstance) -> {
-//            System.out.println("URL: " + url);
-//            System.out.println("Servlet: " + servletInstance.getClass());
-//            servletInstance.doGet();
-//        });
+        container.urlMapping.forEach((url, servletInstance) -> {
+            System.out.println("URL: " + url);
+            System.out.println("Servlet: " + servletInstance.getClass());
+        });
 
         // Start the container
         container.start();

@@ -1,6 +1,5 @@
 package com.duyvu.container;
 
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,25 +8,27 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import lombok.AccessLevel;
 
 /**
  * A mimic version of HttpRequest capturing the request details sent from clients
  */
-
 enum HttpMethod {
-    GET, POST, PUSH, DELETE
+    GET,
+    POST,
+    PUSH,
+    DELETE
 }
 
-@Getter
-@Setter
+@Getter(AccessLevel.PUBLIC)
+@Setter(AccessLevel.PUBLIC)
 public class HttpRequest {
 
-    private HttpMethod method = null;      // A HTTP protocol method
-    private final BufferedReader in;             // InputStream buffer from client
-    private String path = null;            // e.g. /hello?user=123 -> path is /hello
-    private final Map<String, String> requestHeaders;   // header's content, split by :
+    private HttpMethod method = null; // A HTTP protocol method
+    private final BufferedReader in; // InputStream buffer from client
+    private String path = null; // e.g. /hello?user=123 -> path is /hello
+    private final Map<String, String> requestHeaders; // header's content, split by :
     private final Map<String, String> requestParameters; // e.g. user=123, pass=123
 
     public HttpRequest(BufferedReader in) {
@@ -37,18 +38,18 @@ public class HttpRequest {
     }
 
     /**
-     * Parse the query string to the hash map
-     * e.g. name=123&pass=123 -> {name: 123, pass: 123}
+     * Parse the query string to the hash map e.g. name=123&pass=123 -> {name: 123, pass: 123}
      *
      * @param queryString: a query string extracted from the url
      */
     private void parseRequestParameters(String queryString) {
         // e.g. name=123&pass=123
         String[] parameters = queryString.split("&");
-        Arrays.stream(parameters).forEach(param -> {
-            String[] paramArr = param.split("=");
-            requestParameters.put(paramArr[0], paramArr[1]);
-        });
+        Arrays.stream(parameters)
+                .forEach(param -> {
+                    String[] paramArr = param.split("=");
+                    requestParameters.put(paramArr[0], paramArr[1]);
+                });
     }
 
     /**
@@ -119,8 +120,13 @@ public class HttpRequest {
             // field1=value1&field2=value2  <= read this line
 
             if (HttpMethod.POST.equals(method)) {
-                String queryString = in.readLine();
-                parseRequestParameters(queryString);
+                StringBuilder body = new StringBuilder();
+                while (in.ready()) {
+                    body.append((char) in.read());
+                }
+
+//                System.out.println(body.toString());
+                parseRequestParameters(body.toString());
             }
 
         } catch (IOException e) {
@@ -128,5 +134,15 @@ public class HttpRequest {
         }
 
         return true;
+    }
+
+    /**
+     * Get value passed by the param
+     *
+     * @param param: key submitted from the form
+     * @return value of the key
+     */
+    public String getParamValue(String param) {
+        return this.requestParameters.get(param);
     }
 }

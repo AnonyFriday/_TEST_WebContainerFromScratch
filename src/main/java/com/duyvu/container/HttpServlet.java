@@ -9,7 +9,7 @@ package com.duyvu.container;
  *
  * @author duyvu
  */
-public class HttpServlet {
+public abstract class HttpServlet {
 
     // =================================
     // == HttpServlet Lifecycle
@@ -19,13 +19,13 @@ public class HttpServlet {
     }
 
     public void service(HttpRequest request, HttpResponse response) {
-
         HttpMethod method = request.getMethod();
-
         if (HttpMethod.GET.equals(method)) {
             doGet(request, response);
         } else if (HttpMethod.POST.equals(method)) {
             doPost(request, response);
+        } else {
+            throw new RuntimeException("Method not Supported!");
         }
     }
 
@@ -42,6 +42,5 @@ public class HttpServlet {
 
     public void doPost(HttpRequest request, HttpResponse response) {
         System.out.println("doGet() method in Default Impl ...");
-
     }
 }

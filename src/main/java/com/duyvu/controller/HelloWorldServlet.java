@@ -5,6 +5,7 @@ import com.duyvu.container.HttpRequest;
 import com.duyvu.container.HttpResponse;
 import com.duyvu.container.HttpServlet;
 
+import java.io.BufferedReader;
 import java.io.PrintWriter;
 
 /*
@@ -27,17 +28,8 @@ public class HelloWorldServlet extends HttpServlet {
     @Override
     public void doGet(HttpRequest request, HttpResponse response) {
         PrintWriter out = response.getPrintWriter();
-        out.println("HTTP/1.1 200 OK");
-        out.println("Content-Type: text/html");
-        out.println();
         out.println("<html><body>");
         out.println("<p>doGet() in HelloServlet</p>");
         out.println("</body></html>");
-        out.flush();
-    }
-
-    @Override
-    public void doPost(HttpRequest request, HttpResponse response) {
-
     }
 }
