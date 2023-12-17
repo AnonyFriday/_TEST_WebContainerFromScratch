@@ -32,4 +32,9 @@ public class HelloWorldServlet extends HttpServlet {
         out.println("<p>doGet() in HelloServlet</p>");
         out.println("</body></html>");
     }
+
+    @Override
+    public void destroy() {
+        System.out.println("destroy() from HelloWorld Servlet.");
+    }
 }

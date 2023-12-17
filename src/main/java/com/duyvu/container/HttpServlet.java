@@ -30,7 +30,7 @@ public abstract class HttpServlet {
     }
 
     public void destroy() {
-
+        System.out.println("destroy() method in Default Impl ...");
     }
 
     // =================================

@@ -42,4 +42,9 @@ public class SignupServlet extends HttpServlet {
         out.println("<p>Password: " + request.getParamValue("password") + "</p>");
         out.println("</body></html>");
     }
+
+    @Override
+    public void destroy() {
+        System.out.println("destroy() from signup servlet.");
+    }
 }

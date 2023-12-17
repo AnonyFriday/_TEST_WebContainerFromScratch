@@ -130,10 +130,18 @@ public class SimpleWebContainer {
         // Read url mappings from properties file
         container.readPropertiesFile();
 
-        // [Testing] Url the and the servlet instance
-        container.urlMapping.forEach((url, servletInstance) -> {
-            System.out.println("URL: " + url);
-            System.out.println("Servlet: " + servletInstance.getClass());
+//        // [Testing] Url the and the servlet instance
+//        container.urlMapping.forEach((url, servletInstance) -> {
+//            System.out.println("URL: " + url);
+//            System.out.println("Servlet: " + servletInstance.getClass());
+//        });
+
+        // Adding destroy() signal when terminating the tomcat server
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                container.urlMapping.forEach((url, httpServlet) -> httpServlet.destroy());
+            }
         });
 
         // Start the container
